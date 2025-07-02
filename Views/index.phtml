@@ -1,76 +1,139 @@
 <?php require('template/header.phtml') ?>
 
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<!--<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>-->
+<!--<style>-->
+<!--    #calendar { max-width: 1100px; margin: 0 auto; padding: 20px; }-->
+<!--    .fc-event { cursor: pointer; }-->
+<!--</style>-->
+<!--<script>-->
+<!--    let currentYear = 2025;-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        const generateSchedule = () => {-->
+<!--            const shifts = ['Telemetry', 'Consultant', 'Attending'];-->
+<!--            // const doctors = [-->
+<!--            //     'Mujahid', 'Rumaytha', 'Jamil', 'Maryam', 'Abdul Qayyum',-->
+<!--            //     'Abdur', 'Hussain', 'Asma', 'Khadijah', 'Kolchum', 'Chris', 'Lee'-->
+<!--            // ];-->
+<!--            const doctorConstraints = {-->
+<!--                'Mujahid' : { Telemetry: 2, Consultant: 2, Attending: 8 },-->
+<!--                'Rumaytha': { Telemetry: 2, Consultant: 1, Attending: 9 },-->
+<!--                'Jamil': { Telemetry: 3, Consultant: 4, Attending: 5 },-->
+<!--                'Maryam': { Telemetry: 4, Consultant: 6, Attending: 0 },-->
+<!--                'Abdul Qayyum': { Telemetry: 5, Consultant: 5, Attending: 0 },-->
+<!--                'Abdur': { Telemetry: 7, Consultant: 5, Attending: 0 },-->
+<!--                'Hussain': { Telemetry: 4, Consultant: 4, Attending: 0 },-->
+<!--                'Asma': { Telemetry: 3, Consultant: 4, Attending: 5 },-->
+<!--                'Khadijah': { Telemetry: 5, Consultant: 4, Attending: 0 },-->
+<!--                'Kolchum': { Telemetry: 2, Consultant: 3, Attending: 6 },-->
+<!--                'Chris': { Telemetry: 0, Consultant: 0, Attending: 11 },-->
+<!--                'Lee': { Telemetry: 5, Consultant: 4, Attending: 0 }-->
+<!--            };-->
+<!--            //Track assigned shifts-->
+<!--            const assignedShifts = {-->
+<!--                'Telemetry': {}, 'Consultant': {}, 'Attending': {}-->
+<!--            };-->
+<!--            const events = [];-->
+<!--            const colors = {-->
+<!--                Telemetry: '#4338ca',-->
+<!--                Consultant: '#15803d',-->
+<!--                Attending: '#b91c1c'-->
+<!--            };-->
+<!---->
+<!--            // Initialise assigned shifts counter-->
+<!--            Object.keys(doctorConstraints).forEach(doctor => {-->
+<!--                shifts.forEach(shift => {-->
+<!--                    assignedShifts[shift][doctor] = 0;-->
+<!--                });-->
+<!--            });-->
+<!---->
+<!--            let currentDate = new Date(2024, 0, 1);-->
+<!--            while (currentDate.getDay() !== 1) {-->
+<!--                currentDate.setDate(currentDate.getDate() + 1);-->
+<!--            }-->
+<!---->
+<!--            // Helper function to find available doctor for a shift-->
+<!--            const findAvailabledDoctor = (shift, week) => {-->
+<!--                for (let doctor in doctorConstraints){-->
+<!--                    if (assignedShifts[shift][doctor] < doctorConstraints[doctor][shift]){-->
+<!--                        //Check if doctor is already assigned this week-->
+<!--                        const alreadyAssigned = events.some(event =>-->
+<!--                            event.extendedProps.doctor === doctor &&-->
+<!--                            event.start === week.toISOString().split('T')[0]-->
+<!--                        );-->
+<!---->
+<!--                        if (!alreadyAssigned){-->
+<!--                            return doctor;-->
+<!--                        }-->
+<!--                    }-->
+<!--                }-->
+<!--                return null;-->
+<!--            };-->
+<!---->
+<!--            while (currentDate.getFullYear() === 2024) {-->
+<!--                const startOfWeek = new Date(currentDate);-->
+<!--                const endOfWeek = new Date(currentDate);-->
+<!--                endOfWeek.setDate(startOfWeek.getDate() + 4);-->
+<!--                shifts.forEach((shift) => {-->
+<!--                    // const weekNum = Math.floor((currentDate - new Date(currentYear, 0, 1)) / (7 * 24 * 60 * 60 * 1000));-->
+<!--                    // const doctorIndex = (weekNum + idx) % doctors.length;-->
+<!--                    const doctor = findAvailabledDoctor(shift, startOfWeek);-->
+<!--                    if (doctor){-->
+<!--                        assignedShifts[shift][doctor]++;-->
+<!--                        events.push({-->
+<!--                            title: `${shift}: ${doctors[doctorIndex]}`,-->
+<!--                            start: startOfWeek.toISOString().split('T')[0],-->
+<!--                            end: endOfWeek.toISOString().split('T')[0],-->
+<!--                            color: colors[shift],-->
+<!--                            url: '#',-->
+<!--                            extendedProps: {-->
+<!--                                shift: shift,-->
+<!--                                doctor: doctor-->
+<!--                            }-->
+<!--                        });-->
+<!--                    }-->
+<!--                });-->
+<!--                currentDate.setDate(currentDate.getDate() + 7);-->
+<!--            }-->
+<!--            return events;-->
+<!--        };-->
+<!---->
+<!--        var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {-->
+<!--            initialView: 'dayGridMonth',-->
+<!--            initialDate: '2024-01-01', // When this is not specified, this values defaults to the current date. Remove when everything is ready.-->
+<!--            headerToolbar: {-->
+<!--                left: 'prev,next today',-->
+<!--                center: 'title',-->
+<!--                right: 'dayGridMonth,timeGridWeek'-->
+<!--            },-->
+<!--            events: generateSchedule(),-->
+<!--            eventClick: function(info) {-->
+<!--                if (confirm(`Would you like to request a shift swap for ${info.event.title}?`)) {-->
+<!--                    console.log('Shift swap requested for:', info.event.title);-->
+<!--                }-->
+<!--            },-->
+<!--            firstDay: 1,-->
+<!--            weekends: true,-->
+<!--            slotMinTime: '08:00:00',-->
+<!--            slotMaxTime: '18:00:00'-->
+<!--        });-->
+<!---->
+<!--        calendar.render();-->
+<!--    });-->
+<!--</script>-->
+<!---->
+<!--<!--<h2>Welcome 'User' </h2>-->-->
+<!--<body>-->
+<!--<div id="calendar"></div>-->
+<!--</body>-->
+<!--<br/>-->
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            initialDate: '2024-10-07',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: [ //
-                {
-                    title: 'All Day Event',
-                    start: '2024-10-01'
-                },
-                {
-                    title: 'Long Event',
-                    start: '2024-10-07',
-                    end: '2024-10-10'
-                },
-                {
-                    groupId: '999',
-                    title: 'Repeating Event',
-                    start: '2024-10-09T16:00:00'
-                },
-                {
-                    groupId: '999',
-                    title: 'Repeating Event',
-                    start: '2024-10-16T16:00:00'
-                },
-                {
-                    title: 'Conference',
-                    start: '2024-10-11',
-                    end: '2024-10-13'
-                },
-                {
-                    title: 'Meeting',
-                    start: '2024-10-12T10:30:00',
-                    end: '2024-10-12T12:30:00'
-                },
-                {
-                    title: 'Lunch',
-                    start: '2024-10-12T12:00:00'
-                },
-                {
-                    title: 'Meeting',
-                    start: '2024-10-12T14:30:00'
-                },
-                {
-                    title: 'Birthday Party',
-                    start: '2024-10-13T07:00:00'
-                },
-                {
-                    title: 'Click for Google',
-                    url: 'https://google.com/', //Click to go to shift swap page
-                    start: '2024-10-28'
-                }
-            ]
-        });
+<h3>Welcome to my Parcel Buddy Website</h3>
 
-        calendar.render();
-    });
-</script>
-<h2>Welcome 'User' </h2>
-<body>
-<div id="calendar"></div>
-</body>
+<h3>This website is a data driven online client server system called ParcelBuddy aimed at logging and tracking
+    parcel deliveries for a small
+    delivery company and their drivers.</h3>
+<br>
+<p>This system was built using PHP, MySQL and HTML/CSS using an OOP approach to the code and a Model-View-Controller design pattern.</p>
 
-<br/>
 
 <?php require('template/footer.phtml') ?>

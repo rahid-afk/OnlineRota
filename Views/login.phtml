@@ -1,0 +1,22 @@
+<?php require ('template/header.phtml');
+
+if (!isset($_SESSION['login'])){
+    echo '<div class="login-form">
+    
+    <form method="post" action="login.php">
+        <label for="username">Username:</label>
+        <input class="form-control" type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input class="form-control" type="password" id="password" name="password" required>
+        <br>
+        <input class="form-control" type="submit" value="Login" name="loginbutton">
+    </form>';
+}
+else {
+    echo 'Welcome ' . $_POST['username'];
+}
+?>
+    </div>
+
+<?php require ('template/footer.phtml');
