@@ -20,11 +20,12 @@ class Database
         $password = '8473191bd982fe430da634302589e17bbcea3527';
         $host = 'gu525.h.filess.io';
         $dbName = 'onlinerota_wrongtable';
+        $port = '61002';
 
 
         if(self::$_dbInstance === null) { //checks if the PDO exists
             // creates new instance if not, sending in connection info
-            self::$_dbInstance = new self($username, $password, $host, $dbName);
+            self::$_dbInstance = new self($username, $password, $host, $dbName, $port);
         }
 
         return self::$_dbInstance;
@@ -35,11 +36,16 @@ class Database
      * @param $password
      * @param $host
      * @param $database
+     * @param $port
      */
-    private function __construct() {
+    private function __construct($username, $password, $host, $database, $port) {
         try {
 //            $this->_dbHandle = new PDO("mysql:host=$host;dbname=$database",  $username, $password); // creates the database handle with connection info
-            $this->_dbHandle = new PDO("mysql://onlinerota_wrongtable:8473191bd982fe430da634302589e17bbcea3527@gu525.h.filess.io:61002/onlinerota_wrongtable"); // creates the database handle with connection info
+//            $this->_dbHandle = new PDO("mysql://onlinerota_wrongtable:8473191bd982fe430da634302589e17bbcea3527@gu525.h.filess.io:61002/onlinerota_wrongtable"); // creates the database handle with connection info
+            // Include port in the DSN
+//            $dsn = "mysql:host=$host;port=$port;dbname=$database";
+//            $this->_dbHandle = new PDO($dsn, $username, $password);
+            $this->_dbHandle = new PDO("mysql:host=$host;port=$port;dbname=$database", $username, $password);
         }
         catch (PDOException $e) { // catch any failure to connect to the database
             echo $e->getMessage();

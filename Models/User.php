@@ -1,6 +1,6 @@
 <?php
 
-class DeliveryUser {
+class User {
     protected $_userid, $_username, $_password, $_usertype;
 
     public function __construct($dbRow){
