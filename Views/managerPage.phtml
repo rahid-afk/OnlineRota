@@ -16,7 +16,10 @@
     <h2>Create Shift</h2>
     <form action=" <?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-control">
         <label for="shift">Date:</label>
-        <input type="date" id="shift" name="shift" class="form-control" required>
+        <input type="datetime-local" id="shift" name="shift" class="form-control" required>
+
+<!--        <label for="time">Time:</label>-->
+<!--        <input type="time" id="time" name="time" class="form-control" required>-->
 
         <label for="username">Doctor:</label>
 <!--        <input type="text" id="username" name="username" class="form-control" required>-->
