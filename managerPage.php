@@ -15,16 +15,17 @@ $scheduleSet = new ScheduleSet();
 
 if (isset($_POST['createShift'])) {
     // Validate that all required fields are present
-    if (isset($_POST['shift']) && isset($_POST['username']) && isset($_POST['shiftType']) &&
-        !empty($_POST['shift']) && !empty($_POST['username']) && !empty($_POST['shiftType'])) {
+    if (isset($_POST['shiftStart']) && isset($_POST['shiftEnd']) && isset($_POST['username']) && isset($_POST['shiftType']) &&
+        !empty($_POST['shiftStart']) && !empty($_POST['shiftEnd']) && !empty($_POST['username']) && !empty($_POST['shiftType'])) {
 
-        $date = $_POST['shift'];
         $username = $_POST['username'];
         $userid = $userSet->getUserId($username);
         $shiftType = $_POST['shiftType'];
         $shiftId = $shiftTypeSet->getShiftID($shiftType);
+        $shiftStart = $_POST['shiftStart'];
+        $shiftEnd = $_POST['shiftEnd'];
 
-        $view->scheduleSet = $scheduleSet->createShift($date, $userid, $shiftId);
+        $view->scheduleSet = $scheduleSet->createShift($shiftStart, $shiftEnd, $userid, $shiftId);
     }
 } elseif (isset($_POST['createUser'])) {
     $username = $_POST['username'];

@@ -15,14 +15,7 @@
 <?php if (isset($_POST['createShiftBtn'])) { ?>
     <h2>Create Shift</h2>
     <form action=" <?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-control">
-        <label for="shift">Date:</label>
-        <input type="datetime-local" id="shift" name="shift" class="form-control" required>
-
-<!--        <label for="time">Time:</label>-->
-<!--        <input type="time" id="time" name="time" class="form-control" required>-->
-
         <label for="username">Doctor:</label>
-<!--        <input type="text" id="username" name="username" class="form-control" required>-->
         <select name="username" id="username" class="form-control">
             <option value="" disabled selected hidden>Select a Doctor...</option>
             <?php foreach ($view->userSet as $doctor): ?>
@@ -31,8 +24,8 @@
                 </option>
             <?php endforeach; ?>
         </select>
+
         <label for="shiftType">Shift Type:</label>
-<!--        <input type="text" id="shiftType" name="shiftType" class="form-control" required>-->
         <br>
         <select name="shiftType" id="shiftType" class="form-control">
             <option value="" disabled selected hidden>Select a Shift Type...</option>
@@ -42,6 +35,12 @@
                 </option>
             <?php endforeach; ?>
         </select>
+
+        <label for="shiftStart">Shift Start:</label>
+        <input type="datetime-local" id="shiftStart" name="shiftStart" class="form-control" required>
+
+        <label for="shiftEnd">Shift End:</label>
+        <input type="datetime-local" id="shiftEnd" name="shiftEnd" class="form-control" required>
 
         <input type="submit" name="createShift" class="form-control" required>
     </form>

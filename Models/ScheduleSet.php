@@ -10,14 +10,15 @@ class ScheduleSet {
         $this->_dbHandle = $this->_dbInstance->getdbConnection();
     }
 
-    public function createShift($date, $userID, $shiftType){
-        $query = "INSERT INTO schedules (date, user_id, shift_type)
-                    VALUES (:date, :user_id, :shift_type)";
-        $stmnt = $this->_dbHandle->prepare($query);
+    public function createShift($shiftStart, $shiftEnd,  $userID, $shiftType){
+        $query = "INSERT INTO schedules (shift_start, shift_end, user_id, shift_type)
+                    VALUES (:shiftStart, :shiftEnd, :user_id, :shift_type)";
+        $stmt = $this->_dbHandle->prepare($query);
 
-        $stmnt->bindParam(':date', $date);
-        $stmnt->bindParam(':user_id', $userID);
-        $stmnt->bindParam(':shift_type', $shiftType);
-        $stmnt->execute();
+        $stmt->bindParam(':shiftStart', $shiftStart);
+        $stmt->bindParam(':shiftEnd', $shiftEnd);
+        $stmt->bindParam(':user_id', $userID);
+        $stmt->bindParam(':shift_type', $shiftType);
+        $stmt->execute();
     }
 }
