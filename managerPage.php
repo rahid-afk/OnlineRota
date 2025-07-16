@@ -33,7 +33,7 @@ if (isset($_POST['createShift'])) {
     $usertype = $_POST['usertype'];
     $view->deliveryUserSet = $userSet->createUser($username, $password, $usertype);
 } elseif (isset($_POST['viewRecordsBtn'])) {
-    $view->deliveryPointSet = $userSet->getAllDeliveries();
+    $view->deliveryPointSet = $scheduleSet->getAllSchedules();
 } elseif (isset($_POST['viewUsersBtn'])) {
     $view->userSet = $userSet->getAllUsers();
 }
