@@ -3,6 +3,7 @@
 require_once('Models/UserSet.php');
 require_once('Models/ShiftTypeSet.php');
 require_once('Models/ScheduleSet.php');
+require_once('Models/UserTypeSet.php');
 
 $view = new stdClass();
 $view->pageTitle = "Manager Page";
@@ -11,6 +12,7 @@ $view->pageTitle = "Manager Page";
 $userSet = new UserSet();
 $shiftTypeSet = new ShiftTypeSet();
 $scheduleSet = new ScheduleSet();
+$userTypeSet = new UserTypeSet();
 
 
 if (isset($_POST['createShift'])) {
@@ -30,15 +32,29 @@ if (isset($_POST['createShift'])) {
 } elseif (isset($_POST['createUser'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $usertype = $_POST['usertype'];
-    $view->deliveryUserSet = $userSet->createUser($username, $password, $usertype);
+    $usertype = $_POST['userType'];
+    $userTypeID = $userTypeSet->getUserTypeIDFromUserType($usertype);
+
+    $existingUser = $userSet->fetchUsername($username);
+    if ($existingUser){
+        echo "<div class='alert alert-danger'>Username already exists. Please choose a different username.</div>";
+    } else {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $userSet->createUser($username, $password, $userTypeID);
+    }
 } elseif (isset($_POST['viewRecordsBtn'])) {
-    $view->deliveryPointSet = $scheduleSet->getAllSchedules();
+    $view->scheduleSet = $scheduleSet->getAllSchedules();
 } elseif (isset($_POST['viewUsersBtn'])) {
     $view->userSet = $userSet->getAllUsers();
 }
 
-$view->userSet = $userSet->selectAllDoctors();
-$view->shiftTypeSet = $shiftTypeSet->getAllShiftTypes();
+if (isset($_POST['createShiftBtn'])){
+    $view->userSet = $userSet->selectAllDoctors();
+    $view->shiftTypeSet = $shiftTypeSet->getAllShiftTypes();
+}
+if (isset($_POST['createUsersBtn'])){
+    $view->userTypeSet = $userTypeSet->getAllUserTypes();
+}
 
 require_once('Views/managerpage.phtml');

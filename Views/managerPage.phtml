@@ -11,6 +11,7 @@
         <input type="submit" name="viewUsersBtn" value="View Users" class="btn btn-light">
     </form>
     <br>
+
     <!-- Form that is created when Create Records button is pressed -->
 <?php if (isset($_POST['createShiftBtn'])) { ?>
     <h2>Create Shift</h2>
@@ -44,6 +45,7 @@
 
         <input type="submit" name="createShift" class="form-control" required>
     </form>
+
     <!-- Form that is created when Create Users button is pressed --> ,
 <?php } elseif (isset($_POST['createUsersBtn'])) { ?>
     <h2>Create User</h2>
@@ -53,9 +55,19 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" class="form-control" required>
         <label for="usertype">User Type:</label>
-        <input type="text" id="usertype" name="usertype" class="form-control" required>
+<!--        <input type="text" id="usertype" name="usertype" class="form-control" required>-->
+        <select name="userType" id="userType" class="form-control">
+            <option value="" disabled selected hidden>Select a User Type...</option>
+            <?php foreach ($view->userTypeSet as $userType): ?>
+                <option value="<?= htmlspecialchars($userType->getUserType()) ?>">
+                    <?= htmlspecialchars($userType->getUserType()) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
         <input type="submit" name="createUser" class="form-control" required>
     </form>
+
     <!-- Form that is created when View Records button is pressed -->
 <?php } elseif (isset($_POST['viewRecordsBtn'])) { ?>
     <h2>View Records</h2>

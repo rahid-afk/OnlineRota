@@ -106,4 +106,49 @@ class UserSet {
         }
         return $dataset;
     }
+
+    public function createUser($username, $password, $userType){
+        $query = "INSERT INTO users (username, password, usertype)
+                    VALUES (:username, :password, :userType)";
+        $stmt = $this->_dbHandle->prepare($query);
+
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':userType', $userType);
+        $stmt->execute();
+    }
+
+    public function deleteUser($id){
+        $query = "DELETE FROM users WHERE userid=:id";
+        $statement = $this->_dbHandle->prepare($query);
+
+        $statement->bindParam('id', $id);
+        $statement->execute();
+    }
+
+    public function updateUser($id, $name, $pass, $usertype){
+        $query = "UPDATE users 
+                  SET username = :name, password = :pass, usertype = :usertype
+                  WHERE userid = :id";
+        $statement = $this->_dbHandle->prepare($query);
+
+        $statement->bindParam(':name', $name);
+        $statement->bindParam(':pass', $pass);
+        $statement->bindParam(':usertype', $usertype);
+        $statement->bindParam(':id', $id);
+        $statement->execute();
+    }
+
+    public function selectWithID($id){
+        $query = "SELECT * FROM users WHERE userid =:id";
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':id', $id);
+        $statement->execute();
+
+        $dataset = [];
+        while ($row = $statement->fetch()){
+            $dataset[] = new User($row);
+        }
+        return $dataset;
+    }
 }

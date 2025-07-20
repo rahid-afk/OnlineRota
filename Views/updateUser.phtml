@@ -1,0 +1,23 @@
+<?php
+require('template/header.phtml');
+
+foreach ($view->userSet as $user) {
+    $userID = $user->getUserID();
+    $username = $user->getUsername();
+    $password = $user->getPassword();
+    $userType = $user->getUsertype();
+} ?>
+
+<form action=" <?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-control">
+    <label for="id">ID:</label>
+    <input type="text" id="id" name="id" value="<?php echo $userID ?>" class="form-control" readonly>
+    <label for="name">Username:</label>
+    <input type="text" id="name" name="name" value="<?php echo $username ?>" class="form-control" required>
+    <label for="password">Password:</label>
+    <input type="text" id="password" name="password" value="<?php echo $password?>" class="form-control" required>
+    <label for="usertype">Usertype:</label>
+    <input type="text" id="usertype" name="usertype" value="<?php echo $userType ?>" class="form-control" required>
+    <input type="submit" name="updateUser" class="form-control" required>
+</form>
+
+<?php require ('template/footer.phtml');
