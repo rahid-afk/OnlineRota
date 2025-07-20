@@ -3,14 +3,14 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2>Doctor Schedule</h2>
+<!--                <h2>Doctor Schedule</h2>-->
 
                 <!-- Debug information -->
-                <div class="alert alert-info">
-                    <strong>Debug Info:</strong>
-                    <br>Logged in user: <?= htmlspecialchars($_SESSION['login'] ?? 'Not logged in') ?>
-                    <br>Number of schedules found: <?= count($view->schedules ?? []) ?>
-                </div>
+<!--                <div class="alert alert-info">-->
+<!--                    <strong>Debug Info:</strong>-->
+<!--                    <br>Logged in user: --><?php //= htmlspecialchars($_SESSION['login'] ?? 'Not logged in') ?>
+<!--                    <br>Number of shifts found: --><?php //= count($view->schedules ?? []) ?>
+<!--                </div>-->
 
                 <?php if (empty($view->schedules)): ?>
                     <div class="alert alert-warning">
@@ -18,19 +18,19 @@
                     </div>
                 <?php else: ?>
                     <!-- Show raw data for debugging -->
-                    <details>
-                        <summary>Click to see raw schedule data (for debugging)</summary>
-                        <pre><?= htmlspecialchars(json_encode($view->schedules, JSON_PRETTY_PRINT)) ?></pre>
-                    </details>
+<!--                    <details>-->
+<!--                        <summary>Click to see raw schedule data (for debugging)</summary>-->
+<!--                        <pre>--><?php //= htmlspecialchars(json_encode($view->schedules, JSON_PRETTY_PRINT)) ?><!--</pre>-->
+<!--                    </details>-->
                 <?php endif; ?>
 
                 <!-- Filter Control -->
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="showMyShifts">
-                    <label class="form-check-label" for="showMyShifts">
-                        Show only my shifts
-                    </label>
-                </div>
+<!--                <div class="form-check mb-3">-->
+<!--                    <input class="form-check-input" type="checkbox" id="showMyShifts">-->
+<!--                    <label class="form-check-label" for="showMyShifts">-->
+<!--                        Show only my shifts-->
+<!--                    </label>-->
+<!--                </div>-->
 
                 <div id='calendar'></div>
             </div>
@@ -74,7 +74,7 @@
         :root {
             /* Border and layout */
             --fc-border-color: #d1d5db;
-            --fc-daygrid-event-dot-width: 6px;
+            --fc-daygrid-event-dot-width: 8px;
             --fc-event-border-width: 2px;
             --fc-event-resizer-thickness: 8px;
 
@@ -285,6 +285,7 @@
                 return;
             }
 
+
             // Get current user info
             var currentUser = '<?= $_SESSION['login'] ?? '' ?>';
 
@@ -357,10 +358,12 @@
                     var timeRange = startTime + (endTime ? ' - ' + endTime : '');
                     var icon = getShiftIcon(shiftType);
 
+
+
                     var event = {
                         id: id,
                         // Create title with line breaks for FullCalendar's default rendering
-                        title: icon + ' ' + shiftType + '\n' + doctor + '\n' + timeRange,
+                        title: shiftType + '\n' + timeRange,
                         start: start,
                         end: end,
                         backgroundColor: getColorForShiftType(shiftType),
@@ -538,11 +541,12 @@
                     requestSwapBtn.style.display = 'block';
                     requestSwapBtn.onclick = function() {
                         console.log('Shift swap requested for shift ID:', event.id);
-                        alert('Shift swap request submitted!');
-                        var modalInstance = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        }
+                        // alert('Shift swap request submitted!');
+                        // var modalInstance = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+                        // if (modalInstance) {
+                        //     modalInstance.hide();
+                        // }
+                        window.location.href = 'shiftSwap.php?id=' + event.id;
                     };
                 } else {
                     requestSwapBtn.style.display = 'none';

@@ -1,0 +1,250 @@
+<?php require('template/header.phtml') ?>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <i class="fas fa-exchange-alt me-2"></i>
+                            Request Shift Swap
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <?php if (isset($view->error)): ?>
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <?= htmlspecialchars($view->error) ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Current Shift Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-calendar-check me-2"></i>
+                                    Your Current Shift Details
+                                </h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>Shift Type:</strong>
+                                                <div class="mb-2">
+                                                    <?php
+                                                    $shiftType = $view->shift['shiftType'];
+                                                    $icon = '';
+                                                    switch(strtolower($shiftType)) {
+                                                        case 'telemetry': $icon = '🩺'; break;
+                                                        case 'consultant': $icon = '👨‍⚕️'; break;
+                                                        case 'attending': $icon = '🏥'; break;
+                                                        default: $icon = '📋';
+                                                    }
+                                                    echo $icon . ' ' . htmlspecialchars($shiftType);
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Doctor:</strong>
+                                                <div class="mb-2"><?= htmlspecialchars($view->shift['doctor']) ?></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Start Time:</strong>
+                                                <div class="mb-2">
+                                                    <?= date('l, F j, Y \a\t g:i A', strtotime($view->shift['start'])) ?>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>End Time:</strong>
+                                                <div class="mb-2">
+                                                    <?= date('l, F j, Y \a\t g:i A', strtotime($view->shift['end'])) ?>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <strong>Duration:</strong>
+                                                <div>
+                                                    <?php
+                                                    $start = new DateTime($view->shift['start']);
+                                                    $end = new DateTime($view->shift['end']);
+                                                    $duration = $start->diff($end);
+                                                    echo $duration->format('%h hours %i minutes');
+                                                    ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Swap Request Form -->
+                        <form method="post" action="<?= $_SERVER['PHP_SELF'] . '?id=' . htmlspecialchars($_GET['id']) ?>">
+                            <div class="row">
+                                <div class="col-12 mb-4">
+                                    <h5 class="text-primary mb-3">
+                                        <i class="fas fa-user-friends me-2"></i>
+                                        Swap Request Details
+                                    </h5>
+                                </div>
+
+                                <!-- Doctor Selection -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="swapWithDoctor" class="form-label">
+                                        <strong>Select Doctor to Swap With:</strong> <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="swapWithDoctor" id="swapWithDoctor" class="form-select" required>
+                                        <option value="" disabled selected hidden>Choose a doctor...</option>
+                                        <?php if (!empty($view->availableDoctors)): ?>
+                                            <?php foreach ($view->availableDoctors as $doctor): ?>
+                                                <option value="<?= htmlspecialchars($doctor->getUsername()) ?>">
+                                                    <?= htmlspecialchars($doctor->getUsername()) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <option value="" disabled selected hidden >No other doctors available</option>
+                                        <?php endif; ?>
+                                    </select>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Select the doctor you would like to swap shifts with.
+                                    </div>
+                                </div>
+
+                                <!-- Reason Selection -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="swapReason" class="form-label">
+                                        <strong>Reason for Swap:</strong>
+                                    </label>
+                                    <select name="swapReason" id="swapReason" class="form-select">
+                                        <option value="" disabled selected hidden>Select a reason (optional)</option>
+                                        <option value="Personal Emergency">Personal Emergency</option>
+                                        <option value="Family Commitment">Family Commitment</option>
+                                        <option value="Medical Appointment">Medical Appointment</option>
+                                        <option value="Education/Training">Education/Training</option>
+                                        <option value="Vacation/Time Off">Vacation/Time Off</option>
+                                        <option value="Workload Balance">Workload Balance</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <!-- Message -->
+                                <div class="col-12 mb-4">
+                                    <label for="swapMessage" class="form-label">
+                                        <strong>Additional Message:</strong>
+                                    </label>
+                                    <textarea
+                                        name="swapMessage"
+                                        id="swapMessage"
+                                        class="form-control"
+                                        rows="4"
+                                        placeholder="Add any additional details or personal message for the doctor you're requesting to swap with..."
+                                    ></textarea>
+                                    <div class="form-text">
+                                        <i class="fas fa-comment me-1"></i>
+                                        Provide any additional context that might help with your swap request.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex gap-3 justify-content-end">
+                                        <a href="index.php" class="btn btn-secondary">
+                                            <i class="fas fa-times me-2"></i>
+                                            Cancel
+                                        </a>
+                                        <?php if (!empty($view->availableDoctors)): ?>
+                                            <button type="submit" name="submitSwapRequest" class="btn btn-primary">
+                                                <i class="fas fa-paper-plane me-2"></i>
+                                                Send Swap Request
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="button" class="btn btn-primary" disabled>
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                No Doctors Available
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Help Section -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-info">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-info">
+                                            <i class="fas fa-question-circle me-2"></i>
+                                            How Shift Swapping Works
+                                        </h6>
+                                        <ul class="mb-0 small">
+                                            <li>Select a doctor from the dropdown to request a swap with</li>
+                                            <li>The selected doctor will receive a notification about your request</li>
+                                            <li>They can accept or decline your swap request</li>
+                                            <li>If accepted, both shifts will be automatically updated</li>
+                                            <li>You'll receive an email confirmation once the request is processed</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .text-primary {
+            color: #667eea !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-1px);
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        .border-info {
+            border-color: #17a2b8 !important;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .fa, .fas {
+            width: 16px;
+            text-align: center;
+        }
+    </style>
+
+<?php require('template/footer.phtml') ?>

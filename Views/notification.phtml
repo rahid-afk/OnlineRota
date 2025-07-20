@@ -1,0 +1,262 @@
+<?php require('template/header.phtml') ?>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="fas fa-bell me-2"></i>
+                    Notifications
+                    <?php if ($view->pendingCount > 0): ?>
+                        <span class="badge bg-danger ms-2"><?= $view->pendingCount ?></span>
+                    <?php endif; ?>
+                </h2>
+
+                <!-- Success/Error Messages -->
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <?= htmlspecialchars($_SESSION['success']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <?= htmlspecialchars($_SESSION['error']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
+
+                <!-- Notifications Content -->
+                <?php if (empty($view->swapRequests)): ?>
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No Notifications</h4>
+                            <p class="text-muted mb-0">You don't have any shift swap requests at the moment.</p>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div class="row">
+                        <?php foreach ($view->swapRequests as $request): ?>
+                            <div class="col-12 mb-4">
+                                <div class="card notification-card <?= $request['status'] === 'pending' ? 'border-warning' : '' ?>">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-exchange-alt me-2"></i>
+                                                Shift Swap Request
+                                            </h5>
+                                            <small class="text-muted">
+                                                From: <strong><?= htmlspecialchars($request['requester_name']) ?></strong>
+                                            </small>
+                                        </div>
+                                        <div>
+                                            <?php
+                                            $statusClass = '';
+                                            $statusIcon = '';
+                                            switch($request['status']) {
+                                                case 'pending':
+                                                    $statusClass = 'bg-warning';
+                                                    $statusIcon = 'fas fa-clock';
+                                                    break;
+                                                case 'approved':
+                                                    $statusClass = 'bg-success';
+                                                    $statusIcon = 'fas fa-check';
+                                                    break;
+                                                case 'denied':
+                                                    $statusClass = 'bg-danger';
+                                                    $statusIcon = 'fas fa-times';
+                                                    break;
+                                            }
+                                            ?>
+                                            <span class="badge <?= $statusClass ?>">
+                                            <i class="<?= $statusIcon ?> me-1"></i>
+                                            <?= ucfirst($request['status']) ?>
+                                        </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Shift Details -->
+                                            <div class="col-md-8">
+                                                <h6 class="text-primary mb-3">
+                                                    <i class="fas fa-calendar-check me-2"></i>
+                                                    Shift Details
+                                                </h6>
+                                                <div class="row">
+                                                    <div class="col-sm-6 mb-2">
+                                                        <strong>Shift Type:</strong>
+                                                        <div>
+                                                            <?php
+                                                            $shiftType = $request['shift_type'];
+                                                            $icon = '';
+                                                            switch(strtolower($shiftType)) {
+                                                                case 'telemetry': $icon = '🩺'; break;
+                                                                case 'consultant': $icon = '👨‍⚕️'; break;
+                                                                case 'attending': $icon = '🏥'; break;
+                                                                default: $icon = '📋';
+                                                            }
+                                                            echo $icon . ' ' . htmlspecialchars($shiftType);
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-2">
+                                                        <strong>Date:</strong>
+                                                        <div><?= date('l, F j, Y', strtotime($request['shift_start'])) ?></div>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-2">
+                                                        <strong>Start Time:</strong>
+                                                        <div><?= date('g:i A', strtotime($request['shift_start'])) ?></div>
+                                                    </div>
+                                                    <div class="col-sm-6 mb-2">
+                                                        <strong>End Time:</strong>
+                                                        <div><?= date('g:i A', strtotime($request['shift_end'])) ?></div>
+                                                    </div>
+                                                    <div class="col-12 mb-2">
+                                                        <strong>Duration:</strong>
+                                                        <div>
+                                                            <?php
+                                                            $start = new DateTime($request['shift_start']);
+                                                            $end = new DateTime($request['shift_end']);
+                                                            $duration = $start->diff($end);
+                                                            echo $duration->format('%h hours %i minutes');
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Request Details -->
+                                                <?php if (!empty($request['reason']) || !empty($request['message'])): ?>
+                                                    <hr>
+                                                    <h6 class="text-primary mb-3">
+                                                        <i class="fas fa-comment me-2"></i>
+                                                        Request Details
+                                                    </h6>
+                                                    <?php if (!empty($request['reason'])): ?>
+                                                        <div class="mb-2">
+                                                            <strong>Reason:</strong>
+                                                            <div><?= htmlspecialchars($request['reason']) ?></div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($request['message'])): ?>
+                                                        <div class="mb-2">
+                                                            <strong>Message:</strong>
+                                                            <div class="border-start border-3 border-info ps-3">
+                                                                <?= nl2br(htmlspecialchars($request['message'])) ?>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <!-- Action Buttons -->
+                                            <div class="col-md-4">
+                                                <h6 class="text-primary mb-3">
+                                                    <i class="fas fa-tasks me-2"></i>
+                                                    Actions
+                                                </h6>
+
+                                                <?php if ($request['status'] === 'pending'): ?>
+                                                    <div class="d-grid gap-2">
+                                                        <form method="post" style="display: inline;">
+                                                            <input type="hidden" name="request_id" value="<?= $request['id'] ?>">
+                                                            <input type="hidden" name="action" value="approve">
+                                                            <button type="submit" class="btn btn-success btn-sm w-100"
+                                                                    onclick="return confirm('Are you sure you want to approve this shift swap?')">
+                                                                <i class="fas fa-check me-2"></i>
+                                                                Approve Swap
+                                                            </button>
+                                                        </form>
+
+                                                        <form method="post" style="display: inline;">
+                                                            <input type="hidden" name="request_id" value="<?= $request['id'] ?>">
+                                                            <input type="hidden" name="action" value="deny">
+                                                            <button type="submit" class="btn btn-danger btn-sm w-100"
+                                                                    onclick="return confirm('Are you sure you want to deny this shift swap?')">
+                                                                <i class="fas fa-times me-2"></i>
+                                                                Deny Swap
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="text-center">
+                                                        <p class="text-muted mb-1">Request <?= $request['status'] ?></p>
+                                                        <?php if (!empty($request['responded_at'])): ?>
+                                                            <small class="text-muted">
+                                                                <?= date('M j, Y g:i A', strtotime($request['responded_at'])) ?>
+                                                            </small>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endif; ?>
+
+                                                <hr>
+                                                <div class="text-center">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>
+                                                        Requested: <?= date('M j, Y g:i A', strtotime($request['created_at'])) ?>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .notification-card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .notification-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .notification-card.border-warning {
+            border-left: 5px solid #ffc107 !important;
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .text-primary {
+            color: #0d6efd !important;
+        }
+
+        .border-start {
+            border-left: 3px solid #0dcaf0 !important;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+        }
+
+        .badge {
+            font-size: 0.75em;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+        }
+    </style>
+
+<?php require('template/footer.phtml') ?>

@@ -26,6 +26,8 @@ if (isset($_POST['loginbutton'])) {
         $_SESSION['login'] = $username;
     } elseif ($username == 'rumaytha' && $password == 'rumaytha') {
         $_SESSION['login'] = $username;
+    } elseif ($username == 'zakariya' && $password == 'zakariya') {
+        $_SESSION['login'] = $username;
     } else {
         echo "Error in username and/or password";
     }

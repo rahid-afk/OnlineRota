@@ -136,4 +136,80 @@ class ScheduleSet
         $statement->bindParam(':scheduleID', $scheduleID);
         return $statement->execute();
     }
+
+    public function transferShift($shiftId, $newUserId) {
+        $query = "UPDATE schedules SET user_id = :new_user_id WHERE id = :shift_id";
+        $statement = $this->_dbHandle->prepare($query);
+
+        $statement->bindParam(':new_user_id', $newUserId);
+        $statement->bindParam(':shift_id', $shiftId);
+
+        return $statement->execute();
+    }
+
+    public function deleteShift($shiftId) {
+        $query = "DELETE FROM schedules WHERE id = :shift_id";
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':shift_id', $shiftId);
+
+        return $statement->execute();
+    }
+
+    public function createShiftFromExisting($originalShiftId, $newUserId) {
+        // Get the original shift details
+        $query = "SELECT shift_type, shift_start, shift_end FROM schedules WHERE id = :shift_id";
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':shift_id', $originalShiftId);
+        $statement->execute();
+
+        $originalShift = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$originalShift) {
+            return false;
+        }
+
+        // Create new shift for the new user
+        $insertQuery = "INSERT INTO schedules (user_id, shift_type, shift_start, shift_end) 
+                        VALUES (:user_id, :shift_type, :shift_start, :shift_end)";
+        $insertStatement = $this->_dbHandle->prepare($insertQuery);
+
+        $insertStatement->bindParam(':user_id', $newUserId);
+        $insertStatement->bindParam(':shift_type', $originalShift['shift_type']);
+        $insertStatement->bindParam(':shift_start', $originalShift['shift_start']);
+        $insertStatement->bindParam(':shift_end', $originalShift['shift_end']);
+
+        return $insertStatement->execute();
+    }
+
+    public function getShiftById($shiftId) {
+        $query = "SELECT s.*, u.username, st.shift_type as shift_type_name
+                  FROM schedules s 
+                  JOIN users u ON s.user_id = u.userid 
+                  JOIN shift_type st ON s.shift_type = st.shift_id
+                  WHERE s.id = :shift_id";
+
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':shift_id', $shiftId);
+        $statement->execute();
+
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function deleteShiftById($shiftId) {
+        $query = "DELETE FROM schedules WHERE id = :shift_id";
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':shift_id', $shiftId);
+
+        return $statement->execute();
+    }
+
+    public function updateShiftUser($shiftId, $newUserId) {
+        $query = "UPDATE schedules SET user_id = :new_user_id WHERE id = :shift_id";
+        $statement = $this->_dbHandle->prepare($query);
+
+        $statement->bindParam(':new_user_id', $newUserId);
+        $statement->bindParam(':shift_id', $shiftId);
+
+        return $statement->execute();
+    }
 }

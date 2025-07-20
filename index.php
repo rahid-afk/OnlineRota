@@ -27,6 +27,8 @@ if (isset($_SESSION['login'])){
         require_once ('managerPage.php');
     } elseif ($username == 'jamil') {
         require_once ('doctorPage.php');
+    } elseif ($username == 'zakariya') {
+        require_once ('doctorPage.php');
     } else {
         echo "Error in username and/or password";
     }
