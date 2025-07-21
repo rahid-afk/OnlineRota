@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once ('Models/UserSet.php');
 
 $view = new stdClass();

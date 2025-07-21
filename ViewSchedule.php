@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once('Models/ScheduleSet.php');
 require_once('Models/UserSet.php');
 require_once('Models/ShiftTypeSet.php');

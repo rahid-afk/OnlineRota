@@ -7,8 +7,8 @@
         <br>
         <input type="submit" name="createShiftBtn" value="Create Shift" class="btn btn-light">
         <input type="submit" name="createUsersBtn" value="Create User" class="btn btn-light">
-<!--        <input type="submit" name="viewScheduleBtn" value="View Schedule" class="btn btn-light">-->
-        <a href="ViewSchedule.php" class="btn btn-light">View Schedule</a>
+        <input type="submit" name="viewScheduleBtn" value="View Schedule" class="btn btn-light">
+<!--        <a href="ViewSchedule.php" class="btn btn-light">View Schedule</a>-->
         <input type="submit" name="viewUsersBtn" value="View Users" class="btn btn-light">
     </form>
     <br>
@@ -70,10 +70,10 @@
     </form>
 
     <!-- Form that is created when View Records button is pressed -->
-<?php //} elseif (isset($_POST['viewScheduleBtn'])) {
-//    header("Location: ViewSchedule.php");
-//    exit();
-//?>
+<?php } elseif (isset($_POST['viewScheduleBtn'])) {
+    header("Location: ViewSchedule.php");
+    exit();
+?>
 
     <!-- Form that is created when View Users button is pressed -->
 <?php } elseif (isset($_POST['viewUsersBtn'])) { ?>
