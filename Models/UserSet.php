@@ -151,4 +151,78 @@ class UserSet {
         }
         return $dataset;
     }
+
+    /**
+     * Verify password for a user
+     * @param string $username
+     * @param string $password
+     * @return bool
+     */
+    public function verifyPassword($username, $password) {
+        $query = "SELECT password FROM users WHERE username = :username";
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':username', $username);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $storedPassword = $result['password'];
+
+            // Check if password is hashed (starts with $2y$ for bcrypt)
+            if (password_get_info($storedPassword)['algo'] !== null) {
+                // Password is hashed, use password_verify
+                return password_verify($password, $storedPassword);
+            } else {
+                // Password is stored in plain text (for backwards compatibility)
+                return $password === $storedPassword;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Create new user with hashed password
+     * @param string $username
+     * @param string $password
+     * @param int $userType
+     * @return bool
+     */
+    public function createUserWithHash($username, $password, $userType) {
+        // Check if username already exists
+        if ($this->getUserByUsername($username)) {
+            throw new Exception("Username already exists");
+        }
+
+        // Hash the password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $query = "INSERT INTO users (username, password, usertype)
+                    VALUES (:username, :password, :userType)";
+        $stmt = $this->_dbHandle->prepare($query);
+
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':userType', $userType);
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Update user password (with hashing)
+     * @param string $username
+     * @param string $newPassword
+     * @return bool
+     */
+    public function updatePassword($username, $newPassword) {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $query = "UPDATE users SET password = :password WHERE username = :username";
+        $stmt = $this->_dbHandle->prepare($query);
+
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':username', $username);
+
+        return $stmt->execute();
+    }
 }
