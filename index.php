@@ -5,34 +5,29 @@ require_once ('Models/UserSet.php');
 $view = new stdClass();
 $view->pageTitle = 'Homepage';
 
-//$userSet = new UserSet();
+$userSet = new UserSet();
 $username = $_SESSION['login'];
 
-//$usertype = $userSet->fetchUsertype($username);
+$usertype = $userSet->fetchUsertype($username);
 
 /* Establishing which page to require based on the usertype */
 if (isset($_SESSION['login'])){
-//    if ($usertype == 1){ /* Admin */
-//        require_once('managerPage.php');
-//    } else {
-//        require_once ("doctorPage.php");
-////        header("Location: index.php?page=1");
-//        exit;
-//    }
-//    /*ELSE IF usertype == 3 THEN
-//            require_once ("receptionPage.php")
-//    */
-
-    if ($username == 'mujahid') {
-        require_once ('managerPage.php');
-    } elseif ($username == 'jamil') {
-        require_once ('doctorPage.php');
-    } elseif ($username == 'zakariya') {
-        require_once ('doctorPage.php');
-    } else {
-        echo "Error in username and/or password";
+    switch ($usertype) {
+        case 1: // Admin/Manager
+            require_once('managerPage.php');
+            break;
+        case 2: // Doctor
+            require_once('doctorPage.php');
+            break;
+        case 3: // Receptionist (if you have this role)
+//            require_once('receptionPage.php');
+            break;
+        default:
+            // Unknown user type, log out for security
+            session_destroy();
+            header("Location: login.php?error=invalid_usertype");
+            exit();
     }
-
 } else {
     header("Location: login.php");
 }
