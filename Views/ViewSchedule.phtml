@@ -1,0 +1,385 @@
+<?php require('template/header.phtml') ?>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="back-button">
+                    <a href="index.php" class="btn btn-secondary">← Back to Manager Page</a>
+                </div>
+
+                <h2>Full Schedule - All Doctors</h2>
+
+                <!-- Debug information -->
+<!--                <div class="alert alert-info">-->
+<!--                    <strong>Debug Info:</strong>-->
+<!--                    --><?php
+//                    if (isset($view->allSchedules)) {
+//                        echo "Found " . count($view->allSchedules) . " schedule(s)";
+//                        if (count($view->allSchedules) > 0) {
+//                            echo "<br>Sample data: <pre>" . print_r($view->allSchedules[0], true) . "</pre>";
+//                        }
+//                    } else {
+//                        echo "No schedule data found";
+//                    }
+//                    ?>
+<!--                </div>-->
+
+                <div id='calendar'></div>
+            </div>
+        </div>
+
+        <!-- Legend for shift types -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <h5>Shift Types:</h5>
+                <div class="d-flex gap-3">
+                    <div><span class="badge shift-telemetry">🩺 Telemetry</span></div>
+                    <div><span class="badge shift-consultant">👨‍⚕️ Consultant</span></div>
+                    <div><span class="badge shift-attending">🏥 Attending</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Details Modal -->
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventModalLabel">Shift Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="eventModalBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+    <style>
+        /* Custom FullCalendar CSS Variables */
+        :root {
+            --fc-border-color: #d1d5db;
+            --fc-daygrid-event-dot-width: 8px;
+            --fc-event-border-width: 2px;
+            --fc-page-bg-color: #ffffff;
+            --fc-neutral-bg-color: rgba(208, 215, 222, 0.3);
+            --fc-today-bg-color: rgba(255, 220, 40, 0.15);
+            --fc-neutral-text-color: #1f2937;
+            --fc-event-text-color: #ffffff;
+            --fc-button-text-color: #1f2937;
+            --fc-button-bg-color: #f3f4f6;
+            --fc-button-border-color: #d1d5db;
+            --fc-button-hover-bg-color: #e5e7eb;
+            --fc-button-hover-border-color: #9ca3af;
+            --fc-small-font-size: 0.75em;
+            --fc-event-font-size: 0.8em;
+        }
+
+        #calendar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-button {
+            margin-bottom: 20px;
+        }
+
+        .fc-daygrid-event {
+            position: relative;
+            white-space: normal !important;
+            border-radius: 6px !important;
+            font-size: var(--fc-event-font-size) !important;
+            min-height: 65px !important;
+            padding: 4px 6px !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .fc-daygrid-event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+
+        .fc-event-main {
+            padding: 2px 4px !important;
+            height: 100%;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+        }
+
+        /* Shift type colors */
+        .shift-telemetry {
+            background: linear-gradient(135deg, #4338ca, #5b21b6) !important;
+            border-color: #4338ca !important;
+        }
+
+        .shift-consultant {
+            background: linear-gradient(135deg, #15803d, #166534) !important;
+            border-color: #15803d !important;
+        }
+
+        .shift-attending {
+            background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+            border-color: #b91c1c !important;
+        }
+
+        .event-line-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            font-size: 11px;
+            line-height: 1.2;
+            color: white;
+            padding: 2px 0;
+        }
+
+        .event-shift-type-line {
+            font-weight: bold;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .event-doctor-line {
+            margin-bottom: 3px;
+            font-size: 11px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .event-time-line {
+            font-size: 10px;
+            opacity: 0.9;
+            font-weight: 400;
+            margin-top: auto;
+        }
+
+        .event-icon {
+            margin-right: 4px;
+            font-size: 11px;
+        }
+
+        /* Badge styling */
+        .badge.shift-telemetry { background-color: #4338ca; }
+        .badge.shift-consultant { background-color: #15803d; }
+        .badge.shift-attending { background-color: #b91c1c; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM loaded, initializing calendar...');
+
+            var calendarEl = document.getElementById('calendar');
+            if (!calendarEl) {
+                console.error('Calendar element not found!');
+                return;
+            }
+
+            // Convert PHP schedules to JavaScript
+            var schedules = <?php echo json_encode($view->allSchedules ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+            console.log('Raw schedules data:', schedules);
+
+            function getShiftIcon(shiftType) {
+                var type = (shiftType || '').toString().toLowerCase();
+                switch(type) {
+                    case 'telemetry': return '🩺';
+                    case 'consultant': return '👨‍⚕️';
+                    case 'attending': return '🏥';
+                    default: return '📋';
+                }
+            }
+
+            function getColorForShiftType(shiftType) {
+                var type = (shiftType || '').toString().toLowerCase();
+                switch(type) {
+                    case 'telemetry': return '#4338ca';
+                    case 'consultant': return '#15803d';
+                    case 'attending': return '#b91c1c';
+                    default: return '#6b7280';
+                }
+            }
+
+            // Process the schedules for FullCalendar
+            var events = [];
+
+            if (schedules && Array.isArray(schedules) && schedules.length > 0) {
+                events = schedules.map(function(schedule) {
+                    console.log('Processing schedule:', schedule);
+
+                    var shiftType = schedule.shift_type || 'Unknown';
+                    var doctor = schedule.username || 'Unknown Doctor';
+                    var start = schedule.shift_start || null;
+                    var end = schedule.shift_end || null;
+
+                    if (!start) {
+                        console.warn('Schedule missing start time:', schedule);
+                        return null;
+                    }
+
+                    // Format times
+                    var startTime = new Date(start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    var endTime = end ? new Date(end).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                    var timeRange = startTime + (endTime ? ' - ' + endTime : '');
+                    var icon = getShiftIcon(shiftType);
+
+                    var event = {
+                        title: doctor + '\n\n' + shiftType + '\n' + timeRange,
+                        start: start,
+                        end: end,
+                        backgroundColor: getColorForShiftType(shiftType),
+                        borderColor: getColorForShiftType(shiftType),
+                        textColor: '#ffffff',
+
+                        classNames: ['shift-' + shiftType.toLowerCase()],
+
+                        eventContent: function(arg) {
+                            var contentEl = document.createElement('div');
+                            contentEl.className = 'event-line-content';
+
+                            var shiftTypeEl = document.createElement('div');
+                            shiftTypeEl.className = 'event-shift-type-line';
+                            shiftTypeEl.innerHTML = '<span class="event-icon">' + icon + '</span>' + shiftType;
+
+                            var doctorEl = document.createElement('div');
+                            doctorEl.className = 'event-doctor-line';
+                            doctorEl.textContent = doctor;
+
+                            var timeEl = document.createElement('div');
+                            timeEl.className = 'event-time-line';
+                            timeEl.textContent = timeRange;
+
+                            contentEl.appendChild(shiftTypeEl);
+                            contentEl.appendChild(doctorEl);
+                            contentEl.appendChild(timeEl);
+
+                            return { domNodes: [contentEl] };
+                        },
+
+                        extendedProps: {
+                            doctor: doctor,
+                            shiftType: shiftType
+                        }
+                    };
+
+                    console.log('Created event:', event);
+                    return event;
+                }).filter(function(event) {
+                    return event !== null;
+                });
+            } else {
+                // Add a sample event if no data
+                events = [{
+                    title: 'No Shifts Scheduled',
+                    start: '2025-01-15',
+                    backgroundColor: '#6b7280',
+                    borderColor: '#6b7280'
+                }];
+            }
+
+            console.log('Final events array:', events);
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                initialDate: new Date(),
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: events,
+                eventDisplay: 'block',
+                eventMinHeight: 65,
+
+                eventClick: function(info) {
+                    showEventModal(info.event);
+                },
+
+                eventMouseEnter: function(info) {
+                    var event = info.event;
+                    var props = event.extendedProps;
+
+                    var tooltipContent =
+                        props.doctor + ' - ' + props.shiftType + '\n' +
+                        'Start: ' + event.start.toLocaleString() + '\n' +
+                        (event.end ? 'End: ' + event.end.toLocaleString() : '');
+
+                    info.el.title = tooltipContent;
+                },
+
+                firstDay: 1,
+                weekends: true,
+                slotMinTime: '06:00:00',
+                slotMaxTime: '22:00:00',
+                height: 'auto',
+
+                loading: function(bool) {
+                    if (bool) {
+                        console.log('Loading calendar...');
+                    } else {
+                        console.log('Calendar loaded with ' + events.length + ' events');
+                    }
+                }
+            });
+
+            function showEventModal(event) {
+                var props = event.extendedProps;
+                var startTime = event.start ? event.start.toLocaleString() : 'N/A';
+                var endTime = event.end ? event.end.toLocaleString() : 'N/A';
+
+                var modalBody = document.getElementById('eventModalBody');
+
+                modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-sm-6">
+                        <strong>Doctor:</strong><br>
+                        ${getShiftIcon(props.shiftType)} ${props.doctor}
+                    </div>
+                    <div class="col-sm-6">
+                        <strong>Shift Type:</strong><br>
+                        ${props.shiftType}
+                    </div>
+                    <div class="col-sm-6 mt-3">
+                        <strong>Start Time:</strong><br>
+                        ${startTime}
+                    </div>
+                    <div class="col-sm-6 mt-3">
+                        <strong>End Time:</strong><br>
+                        ${endTime}
+                    </div>
+                </div>
+            `;
+
+                var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                modal.show();
+            }
+
+            try {
+                calendar.render();
+                console.log('Calendar rendered successfully');
+
+                if (events.length > 0) {
+                    console.log('✓ Calendar loaded with', events.length, 'shift(s)');
+                } else {
+                    console.log('⚠ Calendar loaded but no shifts found');
+                }
+            } catch (error) {
+                console.error('Error rendering calendar:', error);
+                var errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger';
+                errorDiv.innerHTML = 'Error loading calendar: ' + error.message;
+                calendarEl.appendChild(errorDiv);
+            }
+        });
+    </script>
+
+<?php require('template/footer.phtml') ?>

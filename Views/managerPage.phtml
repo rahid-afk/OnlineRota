@@ -2,12 +2,13 @@
 
     <!-- CRUD Buttons-->
     <form method="post">
-        <label>Create, Read, Update or Delete a Delivery Record Or User:</label>
+        <label>Create, View, Update or Delete a Shift Or User:</label>
         <br>
         <br>
         <input type="submit" name="createShiftBtn" value="Create Shift" class="btn btn-light">
         <input type="submit" name="createUsersBtn" value="Create User" class="btn btn-light">
-        <input type="submit" name="viewRecordsBtn" value="View Records" class="btn btn-light">
+<!--        <input type="submit" name="viewScheduleBtn" value="View Schedule" class="btn btn-light">-->
+        <a href="ViewSchedule.php" class="btn btn-light">View Schedule</a>
         <input type="submit" name="viewUsersBtn" value="View Users" class="btn btn-light">
     </form>
     <br>
@@ -69,41 +70,11 @@
     </form>
 
     <!-- Form that is created when View Records button is pressed -->
-<?php } elseif (isset($_POST['viewRecordsBtn'])) { ?>
-    <h2>View Records</h2>
-    <form action=" <?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="form-control">
-        <table class="table table-hover">
-            <thead>
-            <tr class="page-break">
-                <th>ID</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Postcode</th>
-                <th>Deliverer</th>
-                <th>Lat</th>
-                <th>Long</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-<!--            --><?php //foreach ($view->deliveryPointSet as $deliveryPoint){
-//                echo '<tr> <td>' . $deliveryPoint->getID() .
-//                    '</td> <td>' . $deliveryPoint->getName() .
-//                    '</td> <td>' . $deliveryPoint->getAddress() .
-//                    '</td> <td>' . $deliveryPoint->getCity() .
-//                    '</td> <td>' . $deliveryPoint->getPostcode() .
-//                    '</td> <td>' . $deliveryPoint->getDeliverer() .
-//                    '</td> <td>' . $deliveryPoint->getLat() .
-//                    '</td> <td>' . $deliveryPoint->getLong() .
-//                    '</td> <td>' . $deliveryPoint->getStatus() .
-//                    '</td> <td> <div class="btn-group" role="group" aria-label="Record Actions"><a class="btn btn-info" href="updateRecord.php?id=' . $deliveryPoint->getID() . '">Edit</a>&nbsp;
-//                    <a class="btn btn-danger" href="deleteRecord.php?id=' . $deliveryPoint->getID() . '">Delete</a></div></td>';
-//            } ?>
-            </tbody>
-        </table>
-    </form>
+<?php //} elseif (isset($_POST['viewScheduleBtn'])) {
+//    header("Location: ViewSchedule.php");
+//    exit();
+//?>
+
     <!-- Form that is created when View Users button is pressed -->
 <?php } elseif (isset($_POST['viewUsersBtn'])) { ?>
     <h2>View Users</h2>

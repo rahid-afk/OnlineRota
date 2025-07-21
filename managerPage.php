@@ -43,8 +43,9 @@ if (isset($_POST['createShift'])) {
 
         $userSet->createUser($username, $password, $userTypeID);
     }
-} elseif (isset($_POST['viewRecordsBtn'])) {
-    $view->scheduleSet = $scheduleSet->getAllSchedules();
+//} elseif (isset($_POST['viewRecordsBtn'])) {
+//    $view->scheduleSet = $scheduleSet->getAllSchedules();
+
 } elseif (isset($_POST['viewUsersBtn'])) {
     $view->userSet = $userSet->getAllUsers();
 }

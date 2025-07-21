@@ -44,36 +44,17 @@ class ScheduleSet
         return $dataset;
     }
 
-    public function getAllSchedulesWithDetails()
-    {
-        $query = "SELECT s.id, s.user_id, s.shift_type as shift_type_id, s.shift_start, s.shift_end, 
-                         u.username, st.shift_type
-                  FROM schedules s 
-                  JOIN users u ON s.user_id = u.userid 
-                  JOIN shift_type st ON s.shift_type = st.shift_id
-                  ORDER BY s.shift_start";
+    public function getAllSchedulesWithDetails() {
+        $query = "SELECT s.*, u.username, st.shift_type 
+              FROM schedules s 
+              JOIN users u ON s.user_id = u.userid 
+              JOIN shift_type st ON s.shift_type = st.shift_id 
+              ORDER BY s.shift_start";
 
         $statement = $this->_dbHandle->prepare($query);
         $statement->execute();
 
-        $schedules = [];
-        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-            // Debug: Check what we're getting from the database
-            error_log("Database row: " . print_r($row, true));
-
-            $schedules[] = [
-                'id' => $row['id'],
-                'title' => ($row['shift_type'] ?? 'Unknown') . ': ' . ($row['username'] ?? 'Unknown'),
-                'start' => $row['shift_start'],
-                'end' => $row['shift_end'],
-                'doctor' => $row['username'] ?? 'Unknown',
-                'shiftType' => $row['shift_type'] ?? 'Unknown', // This is now the actual shift type name
-                'shiftTypeId' => $row['shift_type_id'], // The ID for reference
-                'userId' => $row['user_id']
-            ];
-        }
-
-        return $schedules;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getSchedulesForUser($userid)
