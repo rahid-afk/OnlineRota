@@ -20,8 +20,8 @@ if (isset($_POST['loginbutton'])) {
             $pass = $userSet->fetchPassword($username);
             if ($user && $userSet->verifyPassword($username, $password)){
                 $_SESSION['login'] = $username;
-//                $_SESSION['userid'] = $user->getUserID();
-//                $_SESSION['usertype'] = $user->getUserType();
+                $_SESSION['userid'] = $userSet->fetchUserID($username);
+                $_SESSION['usertype'] = $userSet->fetchUsertype($username);
 
                 header("Location: index.php");
                 exit();

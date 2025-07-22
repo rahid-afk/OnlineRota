@@ -37,4 +37,18 @@ class ShiftTypeSet {
         }
         return $dataset;
     }
+
+    public function getShiftTypeByID($shiftID){
+        $query = "SELECT shift_type FROM shift_type WHERE shift_id=:shiftID";
+        $statement = $this->_dbHandle->prepare($query);
+
+        $statement->bindParam(':shiftID', $shiftID);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result){
+            return $result['shift_type'];
+        }
+    }
 }

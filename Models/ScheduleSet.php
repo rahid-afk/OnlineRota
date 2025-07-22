@@ -176,6 +176,21 @@ class ScheduleSet
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getScheduleById($scheduleId) {
+        $query = "SELECT s.id, s.shift_start, s.shift_end, s.user_id, 
+              u.username, st.shift_type 
+              FROM schedules s 
+              JOIN users u ON s.user_id = u.userid 
+              JOIN shift_type st ON s.shift_type = st.shift_id 
+              WHERE s.id = :scheduleId";
+
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':scheduleId', $scheduleId);
+        $statement->execute();
+
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function deleteShiftById($shiftId) {
         $query = "DELETE FROM schedules WHERE id = :shift_id";
         $statement = $this->_dbHandle->prepare($query);
@@ -190,6 +205,33 @@ class ScheduleSet
 
         $statement->bindParam(':new_user_id', $newUserId);
         $statement->bindParam(':shift_id', $shiftId);
+
+        return $statement->execute();
+    }
+
+    /**
+     * Update a shift
+     * @param int $scheduleId
+     * @param string $shiftStart
+     * @param string $shiftEnd
+     * @param int $userid
+     * @param int $shiftId
+     * @return bool
+     */
+    public function updateShift($scheduleId, $shiftStart, $shiftEnd, $userid, $shiftId) {
+        $query = "UPDATE schedules 
+              SET shift_start = :shiftStart, 
+                  shift_end = :shiftEnd, 
+                  user_id = :userid, 
+                  shift_type = :shiftId 
+              WHERE id = :scheduleId";
+
+        $statement = $this->_dbHandle->prepare($query);
+        $statement->bindParam(':shiftStart', $shiftStart);
+        $statement->bindParam(':shiftEnd', $shiftEnd);
+        $statement->bindParam(':userid', $userid);
+        $statement->bindParam(':shiftId', $shiftId);
+        $statement->bindParam(':scheduleId', $scheduleId);
 
         return $statement->execute();
     }

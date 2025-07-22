@@ -3,26 +3,27 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <div class="back-button">
-                    <a href="index.php" class="btn btn-secondary">← Back to Manager Page</a>
-                </div>
+<!--                <div class="back-button">-->
+<!--                    <a href="index.php" class="btn btn-secondary">← Back to Manager Page</a>-->
+<!--                </div>-->
 
-                <h2>Full Schedule - All Doctors</h2>
+<!--                <h2>Full Schedule - All Doctors</h2>-->
 
                 <!-- Debug information -->
-<!--                <div class="alert alert-info">-->
-<!--                    <strong>Debug Info:</strong>-->
-<!--                    --><?php
-//                    if (isset($view->allSchedules)) {
-//                        echo "Found " . count($view->allSchedules) . " schedule(s)";
-//                        if (count($view->allSchedules) > 0) {
-//                            echo "<br>Sample data: <pre>" . print_r($view->allSchedules[0], true) . "</pre>";
-//                        }
-//                    } else {
-//                        echo "No schedule data found";
-//                    }
-//                    ?>
-<!--                </div>-->
+                <!--<div class="alert alert-info">
+                    <strong>Debug Info:</strong>
+                    <?php
+/*                    if (isset($view->allSchedules)) {
+                        echo "Found " . count($view->allSchedules) . " schedule(s)<br>";
+                        if (count($view->allSchedules) > 0) {
+                            echo "Sample data fields: " . implode(', ', array_keys($view->allSchedules[0])) . "<br>";
+                            echo "First schedule: <pre>" . print_r($view->allSchedules[0], true) . "</pre>";
+                        }
+                    } else {
+                        echo "No schedule data found";
+                    }
+                    */?>
+                </div>-->
 
                 <div id='calendar'></div>
             </div>
@@ -53,6 +54,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="editShiftBtn" style="display: none;">Edit Shift</button>
+                        <button type="button" class="btn btn-danger" id="deleteShiftBtn" style="display: none;">Delete Shift</button>
                     </div>
                 </div>
             </div>
@@ -220,6 +223,9 @@
                     var doctor = schedule.username || 'Unknown Doctor';
                     var start = schedule.shift_start || null;
                     var end = schedule.shift_end || null;
+                    var scheduleId = schedule.schedule_id || schedule.id || null;
+
+                    console.log('Schedule ID found:', scheduleId);
 
                     if (!start) {
                         console.warn('Schedule missing start time:', schedule);
@@ -233,7 +239,8 @@
                     var icon = getShiftIcon(shiftType);
 
                     var event = {
-                        title: doctor + '\n\n' + shiftType + '\n' + timeRange,
+                        id: scheduleId || 'no-id-' + Math.random(),
+                        title: doctor + ': \n' + shiftType + '\n' + timeRange,
                         start: start,
                         end: end,
                         backgroundColor: getColorForShiftType(shiftType),
@@ -267,11 +274,14 @@
 
                         extendedProps: {
                             doctor: doctor,
-                            shiftType: shiftType
+                            shiftType: shiftType,
+                            scheduleId: scheduleId,
+                            userId: schedule.userid || null,
+                            shiftId: schedule.shift_id || null
                         }
                     };
 
-                    console.log('Created event:', event);
+                    console.log('Created event with schedule ID:', scheduleId);
                     return event;
                 }).filter(function(event) {
                     return event !== null;
@@ -336,7 +346,15 @@
                 var startTime = event.start ? event.start.toLocaleString() : 'N/A';
                 var endTime = event.end ? event.end.toLocaleString() : 'N/A';
 
+                console.log('showEventModal called with:', {
+                    event: event,
+                    props: props,
+                    scheduleId: props.scheduleId
+                });
+
                 var modalBody = document.getElementById('eventModalBody');
+                var editBtn = document.getElementById('editShiftBtn');
+                var deleteBtn = document.getElementById('deleteShiftBtn');
 
                 modalBody.innerHTML = `
                 <div class="row">
@@ -356,11 +374,83 @@
                         <strong>End Time:</strong><br>
                         ${endTime}
                     </div>
+                    <div class="col-12 mt-3">
+                        <small class="text-muted">
+                            Schedule ID: ${props.scheduleId || 'Not available'}
+                        </small>
+                    </div>
                 </div>
             `;
 
+                // Always show Edit and Delete buttons since this is manager-only page
+                if (props.scheduleId) {
+                    console.log('Showing Edit and Delete buttons');
+                    editBtn.style.display = 'inline-block';
+                    deleteBtn.style.display = 'inline-block';
+
+                    // Set up edit button
+                    editBtn.onclick = function() {
+                        console.log('Edit button clicked, redirecting to:', 'EditShift.php?id=' + props.scheduleId);
+                        window.location.href = 'EditShift.php?id=' + props.scheduleId;
+                    };
+
+                    // Set up delete button
+                    deleteBtn.onclick = function() {
+                        console.log('Delete button clicked');
+                        if (confirm('Are you sure you want to delete this shift for ' + props.doctor + '?\n\nShift: ' + props.shiftType + '\nDate: ' + startTime)) {
+                            deleteShift(props.scheduleId);
+                        }
+                    };
+                } else {
+                    console.log('Hiding buttons - no schedule ID available');
+                    editBtn.style.display = 'none';
+                    deleteBtn.style.display = 'none';
+                }
+
                 var modal = new bootstrap.Modal(document.getElementById('eventModal'));
                 modal.show();
+            }
+
+            // Function to delete shift
+            function deleteShift(scheduleId) {
+                console.log('Deleting shift with ID:', scheduleId);
+
+                // Show loading state
+                var deleteBtn = document.getElementById('deleteShiftBtn');
+                var originalText = deleteBtn.textContent;
+                deleteBtn.textContent = 'Deleting...';
+                deleteBtn.disabled = true;
+
+                // Send AJAX request to delete shift
+                fetch('ViewSchedule.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=delete_shift&schedule_id=' + encodeURIComponent(scheduleId)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Close modal
+                            var modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+                            modal.hide();
+
+                            // Show success message and reload page
+                            alert('Shift deleted successfully!');
+                            window.location.reload();
+                        } else {
+                            alert('Error deleting shift: ' + (data.message || 'Unknown error'));
+                            deleteBtn.textContent = originalText;
+                            deleteBtn.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error deleting shift. Please try again.');
+                        deleteBtn.textContent = originalText;
+                        deleteBtn.disabled = false;
+                    });
             }
 
             try {

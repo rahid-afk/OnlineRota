@@ -54,6 +54,20 @@ class UserSet {
         }
     }
 
+    public function fetchUserID($username){
+        $query = "SELECT userid FROM users WHERE username=:username";
+        $statement = $this->_dbHandle->prepare($query);
+
+        $statement->bindParam(':username', $username);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result){
+            return $result['userid'];
+        }
+    }
+
     public function getAllUsers(){
         $query = "SELECT * FROM users";
 

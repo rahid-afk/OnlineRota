@@ -1,0 +1,163 @@
+<?php require('template/header.phtml') ?>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+
+                <?php if (!empty($view->errorMessage)): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo htmlspecialchars($view->errorMessage); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($view->successMessage)): ?>
+                    <div class="alert alert-success" role="alert">
+                        <?php echo htmlspecialchars($view->successMessage); ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Shift Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="<?php echo $_SERVER['PHP_SELF'] . '?id=' . urlencode($_GET['id']); ?>">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Doctor:</label>
+                                        <select name="username" id="username" class="form-control" required>
+                                            <?php foreach ($view->doctors as $doctor): ?>
+                                                <option value="<?= htmlspecialchars($doctor->getUsername()) ?>"
+                                                    <?= ($doctor->getUsername() === $view->schedule['username']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($doctor->getUsername()) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="shiftType" class="form-label">Shift Type:</label>
+                                        <select name="shiftType" id="shiftType" class="form-control" required>
+                                            <?php foreach ($view->shiftTypes as $shiftType): ?>
+                                                <option value="<?= htmlspecialchars($shiftType->getShiftType()) ?>"
+                                                    <?= ($shiftType->getShiftType() === $view->schedule['shift_type']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($shiftType->getShiftType()) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="shiftStart" class="form-label">Shift Start:</label>
+                                        <input type="datetime-local"
+                                               id="shiftStart"
+                                               name="shiftStart"
+                                               class="form-control"
+                                               value="<?= date('Y-m-d\TH:i', strtotime($view->schedule['shift_start'])) ?>"
+                                               required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="shiftEnd" class="form-label">Shift End:</label>
+                                        <input type="datetime-local"
+                                               id="shiftEnd"
+                                               name="shiftEnd"
+                                               class="form-control"
+                                               value="<?= date('Y-m-d\TH:i', strtotime($view->schedule['shift_end'])) ?>"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <button type="submit" name="updateShift" class="btn btn-primary">
+                                                Update Shift
+                                            </button>
+                                            <a href="ViewSchedule.php" class="btn btn-secondary ms-2">Cancel</a>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted">
+                                                Created: <?= date('M j, Y g:i A', strtotime($view->schedule['shift_start'])) ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Current Shift Info -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">Current Shift Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Doctor:</strong><br>
+                                <?= htmlspecialchars($view->schedule['username']) ?>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Shift Type:</strong><br>
+                                <?= htmlspecialchars($view->schedule['shift_type']) ?>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Start:</strong><br>
+                                <?= date('M j, Y g:i A', strtotime($view->schedule['shift_start'])) ?>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>End:</strong><br>
+                                <?= date('M j, Y g:i A', strtotime($view->schedule['shift_end'])) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Back button at bottom left -->
+                <div class="mt-4">
+                    <a href="ViewSchedule.php" class="btn btn-secondary">← Back to Schedule</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some client-side validation
+        document.getElementById('shiftStart').addEventListener('change', function() {
+            var startTime = new Date(this.value);
+            var endInput = document.getElementById('shiftEnd');
+            var endTime = new Date(endInput.value);
+
+            if (endTime <= startTime) {
+                // Set end time to 8 hours after start time
+                var newEndTime = new Date(startTime.getTime() + (8 * 60 * 60 * 1000));
+                endInput.value = newEndTime.toISOString().slice(0, 16);
+            }
+        });
+
+        document.getElementById('shiftEnd').addEventListener('change', function() {
+            var endTime = new Date(this.value);
+            var startInput = document.getElementById('shiftStart');
+            var startTime = new Date(startInput.value);
+
+            if (endTime <= startTime) {
+                alert('End time must be after start time');
+                this.focus();
+            }
+        });
+    </script>
+
+<?php require('template/footer.phtml') ?>
