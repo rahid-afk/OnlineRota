@@ -69,211 +69,211 @@
     </div>
 
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
-    <style>
-        /* Custom FullCalendar CSS Variables for surgical customization */
-        :root {
-            /* Border and layout */
-            --fc-border-color: #d1d5db;
-            --fc-daygrid-event-dot-width: 8px;
-            --fc-event-border-width: 2px;
-            --fc-event-resizer-thickness: 8px;
-
-            /* Background colors */
-            --fc-page-bg-color: #ffffff;
-            --fc-neutral-bg-color: rgba(208, 215, 222, 0.3);
-            --fc-today-bg-color: rgba(255, 220, 40, 0.15);
-
-            /* Text colors */
-            --fc-neutral-text-color: #1f2937;
-            --fc-event-text-color: #ffffff;
-
-            /* Button styling */
-            --fc-button-text-color: #1f2937;
-            --fc-button-bg-color: #f3f4f6;
-            --fc-button-border-color: #d1d5db;
-            --fc-button-hover-bg-color: #e5e7eb;
-            --fc-button-hover-border-color: #9ca3af;
-            --fc-button-active-bg-color: #d1d5db;
-            --fc-button-active-border-color: #9ca3af;
-
-            /* Custom font sizes */
-            --fc-small-font-size: 0.75em;
-            --fc-event-font-size: 0.8em;
-        }
-
-        #calendar {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Override FullCalendar's daygrid event styling */
-        .fc-daygrid-event {
-            position: relative;
-            white-space: normal !important; /* Allow line breaks */
-            border-radius: 6px !important;
-            font-size: var(--fc-event-font-size) !important;
-            min-height: 65px !important;
-            padding: 4px 6px !important;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .fc-daygrid-event:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            z-index: 999;
-        }
-
-        /* Block event styling - for multi-line content */
-        .fc-daygrid-block-event .fc-event-time {
-            font-weight: bold;
-            font-size: 0.7em;
-            margin-bottom: 2px;
-            display: block;
-        }
-
-        .fc-daygrid-block-event .fc-event-title {
-            padding: 1px 0;
-            font-size: 0.75em;
-            line-height: 1.2;
-            display: block;
-            white-space: normal;
-            overflow: visible;
-        }
-
-        /* Custom event content structure */
-        .fc-event-main {
-            padding: 2px 4px !important;
-            height: 100%;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: flex-start !important;
-        }
-
-        .fc-event-main-frame {
-            height: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-        }
-
-        /* Shift type colors and styles */
-        .shift-telemetry {
-            background: linear-gradient(135deg, #4338ca, #5b21b6) !important;
-            border-color: #4338ca !important;
-            --fc-event-border-color: #4338ca;
-            --fc-event-bg-color: #4338ca;
-        }
-
-        .shift-consultant {
-            background: linear-gradient(135deg, #15803d, #166534) !important;
-            border-color: #15803d !important;
-            --fc-event-border-color: #15803d;
-            --fc-event-bg-color: #15803d;
-        }
-
-        .shift-attending {
-            background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
-            border-color: #b91c1c !important;
-            --fc-event-border-color: #b91c1c;
-            --fc-event-bg-color: #b91c1c;
-        }
-
-        /* Special states */
-        .shift-urgent {
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6) !important;
-        }
-
-        .shift-mine {
-            border: 3px solid #fbbf24 !important;
-            box-shadow: 0 0 12px rgba(251, 191, 36, 0.6) !important;
-        }
-
-        .shift-overtime {
-            border-style: dashed !important;
-            border-width: 3px !important;
-        }
-
-        .shift-overtime::after {
-            content: '⏰';
-            position: absolute;
-            top: 2px;
-            right: 4px;
-            font-size: 12px;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        /* Custom line-by-line content styling */
-        .event-line-content {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            font-size: 11px;
-            line-height: 1.2;
-            color: white;
-            padding: 2px 0;
-        }
-
-        .event-shift-type-line {
-            font-weight: bold;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            font-size: 12px;
-        }
-
-        .event-doctor-line {
-            margin-bottom: 3px;
-            font-size: 11px;
-            opacity: 0.95;
-            font-weight: 500;
-        }
-
-        .event-time-line {
-            font-size: 10px;
-            opacity: 0.9;
-            font-weight: 400;
-            margin-top: auto;
-        }
-
-        .event-icon {
-            margin-right: 4px;
-            font-size: 11px;
-        }
-
-        /* Badge styling */
-        .badge.shift-telemetry { background-color: #4338ca; }
-        .badge.shift-consultant { background-color: #15803d; }
-        .badge.shift-attending { background-color: #b91c1c; }
-
-        /* Responsive adjustments for different views */
-        .fc-timeGridWeek-view .event-line-content,
-        .fc-timeGridDay-view .event-line-content {
-            font-size: 12px;
-        }
-
-        .fc-timeGridWeek-view .event-shift-type-line,
-        .fc-timeGridDay-view .event-shift-type-line {
-            font-size: 13px;
-        }
-
-        .fc-timeGridWeek-view .event-doctor-line,
-        .fc-timeGridDay-view .event-doctor-line {
-            font-size: 12px;
-        }
-
-        .fc-timeGridWeek-view .event-time-line,
-        .fc-timeGridDay-view .event-time-line {
-            font-size: 11px;
-        }
-    </style>
+<!--    <style>-->
+<!--        /* Custom FullCalendar CSS Variables for surgical customization */-->
+<!--        :root {-->
+<!--            /* Border and layout */-->
+<!--            --fc-border-color: #d1d5db;-->
+<!--            --fc-daygrid-event-dot-width: 8px;-->
+<!--            --fc-event-border-width: 2px;-->
+<!--            --fc-event-resizer-thickness: 8px;-->
+<!---->
+<!--            /* Background colors */-->
+<!--            --fc-page-bg-color: #ffffff;-->
+<!--            --fc-neutral-bg-color: rgba(208, 215, 222, 0.3);-->
+<!--            --fc-today-bg-color: rgba(255, 220, 40, 0.15);-->
+<!---->
+<!--            /* Text colors */-->
+<!--            --fc-neutral-text-color: #1f2937;-->
+<!--            --fc-event-text-color: #ffffff;-->
+<!---->
+<!--            /* Button styling */-->
+<!--            --fc-button-text-color: #1f2937;-->
+<!--            --fc-button-bg-color: #f3f4f6;-->
+<!--            --fc-button-border-color: #d1d5db;-->
+<!--            --fc-button-hover-bg-color: #e5e7eb;-->
+<!--            --fc-button-hover-border-color: #9ca3af;-->
+<!--            --fc-button-active-bg-color: #d1d5db;-->
+<!--            --fc-button-active-border-color: #9ca3af;-->
+<!---->
+<!--            /* Custom font sizes */-->
+<!--            --fc-small-font-size: 0.75em;-->
+<!--            --fc-event-font-size: 0.8em;-->
+<!--        }-->
+<!---->
+<!--        #calendar {-->
+<!--            max-width: 1200px;-->
+<!--            margin: 0 auto;-->
+<!--            padding: 20px;-->
+<!--        }-->
+<!---->
+<!--        /* Override FullCalendar's daygrid event styling */-->
+<!--        .fc-daygrid-event {-->
+<!--            position: relative;-->
+<!--            white-space: normal !important; /* Allow line breaks */-->
+<!--            border-radius: 6px !important;-->
+<!--            font-size: var(--fc-event-font-size) !important;-->
+<!--            min-height: 65px !important;-->
+<!--            padding: 4px 6px !important;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.3s ease;-->
+<!--            overflow: hidden;-->
+<!--        }-->
+<!---->
+<!--        .fc-daygrid-event:hover {-->
+<!--            transform: translateY(-2px);-->
+<!--            box-shadow: 0 6px 12px rgba(0,0,0,0.2);-->
+<!--            z-index: 999;-->
+<!--        }-->
+<!---->
+<!--        /* Block event styling - for multi-line content */-->
+<!--        .fc-daygrid-block-event .fc-event-time {-->
+<!--            font-weight: bold;-->
+<!--            font-size: 0.7em;-->
+<!--            margin-bottom: 2px;-->
+<!--            display: block;-->
+<!--        }-->
+<!---->
+<!--        .fc-daygrid-block-event .fc-event-title {-->
+<!--            padding: 1px 0;-->
+<!--            font-size: 0.75em;-->
+<!--            line-height: 1.2;-->
+<!--            display: block;-->
+<!--            white-space: normal;-->
+<!--            overflow: visible;-->
+<!--        }-->
+<!---->
+<!--        /* Custom event content structure */-->
+<!--        .fc-event-main {-->
+<!--            padding: 2px 4px !important;-->
+<!--            height: 100%;-->
+<!--            display: flex !important;-->
+<!--            flex-direction: column !important;-->
+<!--            justify-content: flex-start !important;-->
+<!--        }-->
+<!---->
+<!--        .fc-event-main-frame {-->
+<!--            height: 100% !important;-->
+<!--            display: flex !important;-->
+<!--            flex-direction: column !important;-->
+<!--        }-->
+<!---->
+<!--        /* Shift type colors and styles */-->
+<!--        .shift-telemetry {-->
+<!--            background: linear-gradient(135deg, #4338ca, #5b21b6) !important;-->
+<!--            border-color: #4338ca !important;-->
+<!--            --fc-event-border-color: #4338ca;-->
+<!--            --fc-event-bg-color: #4338ca;-->
+<!--        }-->
+<!---->
+<!--        .shift-consultant {-->
+<!--            background: linear-gradient(135deg, #15803d, #166534) !important;-->
+<!--            border-color: #15803d !important;-->
+<!--            --fc-event-border-color: #15803d;-->
+<!--            --fc-event-bg-color: #15803d;-->
+<!--        }-->
+<!---->
+<!--        .shift-attending {-->
+<!--            background: linear-gradient(135deg, #b91c1c, #991b1b) !important;-->
+<!--            border-color: #b91c1c !important;-->
+<!--            --fc-event-border-color: #b91c1c;-->
+<!--            --fc-event-bg-color: #b91c1c;-->
+<!--        }-->
+<!---->
+<!--        /* Special states */-->
+<!--        .shift-urgent {-->
+<!--            animation: pulse 2s infinite;-->
+<!--            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6) !important;-->
+<!--        }-->
+<!---->
+<!--        .shift-mine {-->
+<!--            border: 3px solid #fbbf24 !important;-->
+<!--            box-shadow: 0 0 12px rgba(251, 191, 36, 0.6) !important;-->
+<!--        }-->
+<!---->
+<!--        .shift-overtime {-->
+<!--            border-style: dashed !important;-->
+<!--            border-width: 3px !important;-->
+<!--        }-->
+<!---->
+<!--        .shift-overtime::after {-->
+<!--            content: '⏰';-->
+<!--            position: absolute;-->
+<!--            top: 2px;-->
+<!--            right: 4px;-->
+<!--            font-size: 12px;-->
+<!--        }-->
+<!---->
+<!--        @keyframes pulse {-->
+<!--            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }-->
+<!--            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }-->
+<!--            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }-->
+<!--        }-->
+<!---->
+<!--        /* Custom line-by-line content styling */-->
+<!--        .event-line-content {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            height: 100%;-->
+<!--            font-size: 11px;-->
+<!--            line-height: 1.2;-->
+<!--            color: white;-->
+<!--            padding: 2px 0;-->
+<!--        }-->
+<!---->
+<!--        .event-shift-type-line {-->
+<!--            font-weight: bold;-->
+<!--            margin-bottom: 3px;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            font-size: 12px;-->
+<!--        }-->
+<!---->
+<!--        .event-doctor-line {-->
+<!--            margin-bottom: 3px;-->
+<!--            font-size: 11px;-->
+<!--            opacity: 0.95;-->
+<!--            font-weight: 500;-->
+<!--        }-->
+<!---->
+<!--        .event-time-line {-->
+<!--            font-size: 10px;-->
+<!--            opacity: 0.9;-->
+<!--            font-weight: 400;-->
+<!--            margin-top: auto;-->
+<!--        }-->
+<!---->
+<!--        .event-icon {-->
+<!--            margin-right: 4px;-->
+<!--            font-size: 11px;-->
+<!--        }-->
+<!---->
+<!--        /* Badge styling */-->
+<!--        .badge.shift-telemetry { background-color: #4338ca; }-->
+<!--        .badge.shift-consultant { background-color: #15803d; }-->
+<!--        .badge.shift-attending { background-color: #b91c1c; }-->
+<!---->
+<!--        /* Responsive adjustments for different views */-->
+<!--        .fc-timeGridWeek-view .event-line-content,-->
+<!--        .fc-timeGridDay-view .event-line-content {-->
+<!--            font-size: 12px;-->
+<!--        }-->
+<!---->
+<!--        .fc-timeGridWeek-view .event-shift-type-line,-->
+<!--        .fc-timeGridDay-view .event-shift-type-line {-->
+<!--            font-size: 13px;-->
+<!--        }-->
+<!---->
+<!--        .fc-timeGridWeek-view .event-doctor-line,-->
+<!--        .fc-timeGridDay-view .event-doctor-line {-->
+<!--            font-size: 12px;-->
+<!--        }-->
+<!---->
+<!--        .fc-timeGridWeek-view .event-time-line,-->
+<!--        .fc-timeGridDay-view .event-time-line {-->
+<!--            font-size: 11px;-->
+<!--        }-->
+<!--    </style>-->
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -363,7 +363,7 @@
                     var event = {
                         id: id,
                         // Create title with line breaks for FullCalendar's default rendering
-                        title: shiftType + '\n' + timeRange,
+                        title: shiftType,
                         start: start,
                         end: end,
                         backgroundColor: getColorForShiftType(shiftType),
@@ -437,6 +437,14 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
+                displayEventTime: true,
+                displayEventEnd: true,
+                eventTimeFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+
                 events: events,
 
                 // Event styling

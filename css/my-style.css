@@ -2,24 +2,15 @@ main > .container {
     padding: 60px 15px 0;
 }
 
-
-
-
-
-
-
 #title {
     margin-top: 12px;
     background-color: #fff;
     color: #000;
-
 }
-
 
 #content {
     background-color: #fff;
     border-top: solid 6px #f00;
-
 }
 
 #footer {
@@ -27,4 +18,87 @@ main > .container {
     text-align: center;
     background-color: #000;
     color: #fff; */
+}
+
+/* FullCalendar styles moved from doctorPage.phtml */
+#calendar {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.fc-event {
+    cursor: pointer;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    height: auto !important;
+    min-height: 30px !important;
+}
+
+.fc-event-main {
+    padding: 3px 5px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+}
+
+/* Force the event main content to be a column layout */
+.fc-daygrid-event .fc-event-main {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+}
+
+/* Ensure time appears on its own line at the top */
+.fc-event-time {
+    font-weight: bold !important;
+    line-height: 1.1 !important;
+    margin-bottom: 2px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    display: block !important;
+    width: 100% !important;
+    order: 1 !important;
+}
+
+/* Ensure title appears below the time */
+.fc-event-title {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-wrap: break-word;
+    line-height: 1.2;
+    margin-top: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    order: 2 !important;
+}
+
+/* Override FullCalendar's default inline layout */
+.fc-daygrid-event .fc-event-main-frame {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+}
+
+/* Increase day cell height to accommodate longer event titles */
+.fc-daygrid-event {
+    white-space: normal !important;
+    margin-bottom: 2px !important;
+}
+
+.fc-daygrid-day-events {
+    margin-bottom: 5px;
+}
+
+/* Ensure proper spacing in month view */
+.fc-daygrid-day-frame {
+    min-height: 100px;
+}
+
+/* Make sure timed events in week/day view also follow this layout */
+.fc-timegrid-event .fc-event-main {
+    display: flex !important;
+    flex-direction: column !important;
 }
