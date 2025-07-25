@@ -30,6 +30,7 @@ if (!$shiftId) {
 
 // Get the shift details
 $view->shift = null;
+$view->user = null;
 $allSchedules = $scheduleSet->getAllSchedulesWithDetails();
 
 foreach ($allSchedules as $schedule) {
@@ -46,9 +47,9 @@ if (!$view->shift) {
 }
 
 // Check if this is the user's shift
-if ($view->shift['userId'] != $currentUserId) {
+if ($view->shift['user_id'] != $currentUserId) {
     $_SESSION['error'] = "You can only request swaps for your own shifts.";
-    header("Location: doctorPage.php");
+    header("Location: index.php");
     exit;
 }
 

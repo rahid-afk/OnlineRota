@@ -32,7 +32,7 @@
                                                 <strong>Shift Type:</strong>
                                                 <div class="mb-2">
                                                     <?php
-                                                    $shiftType = $view->shift['shiftType'];
+                                                    $shiftType = $view->shift['shift_type'];
                                                     $icon = '';
                                                     switch(strtolower($shiftType)) {
                                                         case 'telemetry': $icon = '🩺'; break;
@@ -46,26 +46,31 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <strong>Doctor:</strong>
-                                                <div class="mb-2"><?= htmlspecialchars($view->shift['doctor']) ?></div>
+<!--                                                <div class="mb-2">--><?php //= htmlspecialchars($view->shift['doctor']) ?><!--</div>-->
+                                                <div class="mb-2"><?= htmlspecialchars($view->shift['username']) ?></div>
                                             </div>
                                             <div class="col-md-6">
                                                 <strong>Start Time:</strong>
                                                 <div class="mb-2">
-                                                    <?= date('l, F j, Y \a\t g:i A', strtotime($view->shift['start'])) ?>
+<!--                                                    --><?php //= date('l, F j, Y \a\t g:i A', strtotime($view->shift['start'])) ?>
+                                                    <?= date('l, F j, Y \a\t g:i A', strtotime($view->shift['shift_start'])) ?>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <strong>End Time:</strong>
                                                 <div class="mb-2">
-                                                    <?= date('l, F j, Y \a\t g:i A', strtotime($view->shift['end'])) ?>
+                                                    <?= date('l, F j, Y \a\t g:i A', strtotime($view->shift['shift_end'])) ?>
+<!--                                                    --><?php //= date('l, F j, Y \a\t g:i A', strtotime($view->shift['end'])) ?>
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <strong>Duration:</strong>
                                                 <div>
                                                     <?php
-                                                    $start = new DateTime($view->shift['start']);
-                                                    $end = new DateTime($view->shift['end']);
+                                                    $start = new DateTime($view->shift['shift_start']);
+//                                                    $start = new DateTime($view->shift['start']);
+                                                    $end = new DateTime($view->shift['shift_end']);
+//                                                    $end = new DateTime($view->shift['end']);
                                                     $duration = $start->diff($end);
                                                     echo $duration->format('%h hours %i minutes');
                                                     ?>
