@@ -16,11 +16,19 @@ class Database
      * @return Database
      */
     public static function getInstance() {
-        $username ='onlinerota_wrongtable';
-        $password = '8473191bd982fe430da634302589e17bbcea3527';
-        $host = 'gu525.h.filess.io';
-        $dbName = 'onlinerota_wrongtable';
-        $port = '61002';
+//        $username ='onlinerota_wrongtable';
+//        $password = '8473191bd982fe430da634302589e17bbcea3527';
+//        $host = 'gu525.h.filess.io';
+//        $dbName = 'onlinerota_wrongtable';
+//        $port = '61002';
+
+
+        // Connect with PuTTy first before using
+        $username ='medinwep_rahid';
+        $password = 'Polyjuice23';
+        $host = '127.0.0.1';
+        $dbName = 'medinwep_onlinerota';
+        $port = '5522';
 
 
         if(self::$_dbInstance === null) { //checks if the PDO exists
